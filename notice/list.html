@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  width: 100%;
+  border: 1px solid #ddd;
+}
+
+th, td {
+  text-align: left;
+  padding: 16px;
+}
+
+tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+</style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script>
+//페이지 로딩과 함께 서버에서 데이터 가져오기 
+$(function(){
+  loadData();
+});
+
+function loadData(){
+  $.ajax({
+    url:"/notice/list",
+    type:"get",
+    success:function(result){
+      //console.log(result.list[0].title);
+
+      //테이블에 동적 출력 
+      printTable(result); //매개변수로 제이슨 전달!
+    }
+  });
+}
+function printTable(json){
+  var tag="";
+      tag +="<table width=\"100%\" border=\"1px\">";
+      tag +="<tr>";
+      tag +="<td width=\"5%\">No</td>";
+      tag +="<td width=\"50%\">제목</td>";
+      tag +="<td width=\"15%\">작성자</td>";
+      tag +="<td width=\"20%\">등록일</td>";
+      tag +="<td width=\"10%\">조회수</td>";
+      tag +="</tr>";
+             
+      var total = json.list.length;
+
+      for(var i=0;i<json.list.length;i++){
+        var obj = json.list[i];
+          tag +="<tr>";
+          tag +="<td>"+(total--) +"</td>";
+          tag +="<td>"+obj.title+"</td>";
+          tag +="<td>"+obj.writer+"</td>";
+          tag +="<td>"+obj.regdate.substring(0,10)+"</td>";
+          tag +="<td>"+obj.hit+"</td>";
+          tag +="</tr>";
+        }
+        tag +="</table>";   
+        document.querySelector("#content").innerHTML=tag;
+}
+</script>
+
+</head>
+<body>
+<div id="content"></div>
+</body>
+</html>

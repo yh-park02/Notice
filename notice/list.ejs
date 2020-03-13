@@ -1,0 +1,97 @@
+<%
+// 페이징 처리란? 
+// 한 페이지에 모든 데이터를 보여줄 수 없으므로 분할하여 출력하는 기법을 말한다. 
+
+//페이징 처리에 사용되는 변수 및 계산(순서도 중요함)
+var currentPage=1; //현재 페이지  
+//처음에 들어오면 1이지만, 페이지 링크를 누른 사람은 해당 페이지 번호를 
+//봐야하므로 currentPage 값을 전송된 파라미터 값으로 대체하자!
+if(params.currentPage != undefined){ //넘어온 변수가 있다면.. 그 값으로 대체 
+  currentPage = params.currentPage;
+}
+
+var totalRecord=26; //총 레코드 수 
+var pageSize= 10; //한 페이지당 보여질 레코드 수
+var totalPage= Math.ceil(totalRecord/pageSize); //총 페이지 수 
+var blockSize= 10; //블럭당 보여질 페이지 수 
+var firstPage= currentPage-(currentPage-1)%blockSize; //블럭당 시작 페이지 
+var lastPage= firstPage + (blockSize-1); //블럭당 끝 페이지 
+var num= totalRecord - (currentPage-1)*pageSize; //페이지당 시작 번호
+%>
+
+<%="넘어온 페이지 번호 : "+params.currentPage%><br>
+<%="currentPage : "+currentPage%><br>
+<%="totalRecord : "+totalRecord%><br>
+<%="pageSize : "+pageSize%><br>
+<%="totalPage : "+totalPage%><br>
+<%="blockSize : "+blockSize%><br>
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  width: 100%;
+  border: 1px solid #ddd;
+}
+
+th, td {
+  text-align: left;
+  padding: 16px;
+}
+
+tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+a{text-decoration: none;}
+.pageStyle{
+  font-size: 15pt;
+  color: red;
+  font-weight: bold;
+}
+</style>
+</head>
+<body>
+<table>
+  <tr>
+    <th>No</th>
+    <th>Last Name</th>
+    <th>Points</th>
+  </tr>
+  <%for(var i=1; i<=pageSize; i++){%>
+    <%if(num<1)break;%>
+
+    <tr>
+      <td><%=num%></td>
+      <td>Smith</td>
+      <td>50</td>
+    </tr>
+    <%num=num-1%>
+  <%}%>
+  <tr>
+    <td colspan="3" style="text-align:center">
+      <%if(firstPage-1>1){//firstPage-1 결과가 1보다 커야 한다!%>
+      <a href="/notice/list?currentPage=<%=firstPage-1%>">◁</a>
+      <%}else{%>
+      <a href="javascript:alert('이전 블럭이 없습니다.')">◁</a>
+      <%}%>
+
+      <%for(var i=firstPage; i<=lastPage; i++){%>
+        <%if(i>totalPage)break;//총 페이지 수를 넘어서면 멈춘다%> 
+        <a <%if(i==currentPage){%>class="pageStyle"<%}%> href="/notice/list?currentPage=<%=i%>">[<%=i%>]</a>
+      <%}%>
+      <%if(lastPage+1 < totalPage){%>
+      <a href="/notice/list?currentPage=<%=lastPage+1%>">▷</a>
+      <%}else{%>
+      <a href="javascript:alert('마지막페이지입니다.')">▷</a>
+      <%}%>
+    </td>
+  </tr>
+</table>
+<button onClick="location.href='/notice/regist.html';">글쓰기</button>
+
+</body>
+</html>
